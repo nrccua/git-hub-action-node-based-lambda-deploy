@@ -23,6 +23,7 @@ inputs:
 runs:
   steps:
     - name: Zip
+      shell: bash
       run: zip -r ${{ inputs.name }}_${{ inputs.env }}.zip *
 
     - name: Install AWS CLI
