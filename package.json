@@ -1,6 +1,6 @@
 {
   "name": "git-hub-action-node-based-lambda-deploy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Base GitHub action that can be used to deploy any NodeJs based lambda",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
