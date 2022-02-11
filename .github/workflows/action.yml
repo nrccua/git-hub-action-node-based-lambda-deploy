@@ -24,12 +24,8 @@ on:
         required: true
 
 jobs:
-  build:
-    name: Build and Deploy
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ["14"]
+  deploy:
+    name: Zip and Deploy
     steps:
       - name: Zip
         run: zip -r ${{ inputs.name }}_${{ inputs.env }}.zip *
