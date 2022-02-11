@@ -7,7 +7,7 @@ Base GitHub action that can be used to deploy any NodeJs based lambda
 ```
 jobs:
   deploy:
-    uses: nrccua/git-hub-action-node-based-lambda-deploy/action.yml@main
+    uses: nrccua/git-hub-action-node-based-lambda-deploy/.github/workflows/action.yml@main
     with:
       name: datalab-super-score-scheduler
       product: datalab
