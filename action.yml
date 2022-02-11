@@ -1,58 +1,54 @@
 name: Deploy NodeJs based Lambda
 description: Deploy Node based lambdas to AWS
 
-on:
-  workflow_call:
-    inputs:
-      name:
-        description: "Function Name"
-        required: true
-      product:
-        description: "Product (eg: datalab)"
-        required: true
+inputs:
+  name:
+    description: "Function Name"
+    required: true
+  product:
+    description: "Product (eg: datalab)"
+    required: true
+  env:
+    description: "Env to be deploys"
+    required: true
+  AWS_ACCESS_KEY_ID:
+    required: true
+  AWS_SECRET_KEY_ID:
+    required: true
+  AWS_REGION:
+    required: true
+  AWS_S3_BUCKET:
+    required: true
+
+runs:
+  steps:
+    - name: Zip
+      run: zip -r ${{ inputs.name }}_${{ inputs.env }}.zip *
+
+    - name: Install AWS CLI
+      uses: nrccua/github-action-install-awscli@master
+      with:
+        aws_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ inputs.AWS_SECRET_KEY_ID }}
+        aws_region: ${{ inputs.AWS_REGION }}
+
+    - name: Deploy
+      shell: bash
       env:
-        description: "Env to be deploys"
-        required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_KEY_ID:
-        required: true
-      AWS_REGION:
-        required: true
-      AWS_S3_BUCKET:
-        required: true
-
-jobs:
-  deploy:
-    name: Zip and Deploy
-    steps:
-      - name: Zip
-        run: zip -r ${{ inputs.name }}_${{ inputs.env }}.zip *
-
-      - name: Install AWS CLI
-        uses: nrccua/github-action-install-awscli@master
-        with:
-          aws_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ inputs.AWS_SECRET_KEY_ID }}
-          aws_region: ${{ inputs.AWS_REGION }}
-
-      - name: Deploy
-        shell: bash
-        env:
-          aws_s3_bucket: ${{ inputs.AWS_S3_BUCKET }}
-        run: |
-          alias aws="/usr/local/bin/aws"
-          aws s3 cp ${{ inputs.name }}_${{ inputs.env }}.zip s3://$aws_s3_bucket/lambdas/${{ inputs.product }}/${{ inputs.name }}_${{ inputs.env }}.zip
-          aws lambda get-function \
-            --function-name ${{ inputs.name }}-${{ inputs.env }}
-          GET_RETURN=$?
-          if [ "$GET_RETURN" -eq "0" ]; then
-            aws lambda update-function-code \
-              --function-name ${{ inputs.name }}-${{ inputs.env }} \
-              --s3-bucket $aws_s3_bucket \
-              --s3-key lambdas/${{ inputs.product }}/${{ inputs.name }}_${{ inputs.env }}.zip \
-              --publish
-          else
-            echo "MUST CREATE LAMBDA VIA TERRAFORM"
-            return 1
-          fi
+        aws_s3_bucket: ${{ inputs.AWS_S3_BUCKET }}
+      run: |
+        alias aws="/usr/local/bin/aws"
+        aws s3 cp ${{ inputs.name }}_${{ inputs.env }}.zip s3://$aws_s3_bucket/lambdas/${{ inputs.product }}/${{ inputs.name }}_${{ inputs.env }}.zip
+        aws lambda get-function \
+          --function-name ${{ inputs.name }}-${{ inputs.env }}
+        GET_RETURN=$?
+        if [ "$GET_RETURN" -eq "0" ]; then
+          aws lambda update-function-code \
+            --function-name ${{ inputs.name }}-${{ inputs.env }} \
+            --s3-bucket $aws_s3_bucket \
+            --s3-key lambdas/${{ inputs.product }}/${{ inputs.name }}_${{ inputs.env }}.zip \
+            --publish
+        else
+          echo "MUST CREATE LAMBDA VIA TERRAFORM"
+          return 1
+        fi
