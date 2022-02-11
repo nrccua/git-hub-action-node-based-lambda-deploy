@@ -11,9 +11,7 @@ inputs:
   env:
     description: "Env to be deploys"
     required: true
-  AWS_ACCESS_KEY_ID:
-    required: true
-  AWS_SECRET_KEY_ID:
+  AWS_IAM_ROLE:
     required: true
   AWS_REGION:
     required: true
@@ -30,8 +28,7 @@ runs:
     - name: Install AWS CLI
       uses: nrccua/github-action-install-awscli@master
       with:
-        aws_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ inputs.AWS_SECRET_KEY_ID }}
+        aws_iam_role: ${{ inputs.AWS_IAM_ROLE }}
         aws_region: ${{ inputs.AWS_REGION }}
 
     - name: Deploy
