@@ -20,6 +20,9 @@ inputs:
 
 runs:
   using: "composite"
+  permissions:
+    id-token: write
+    contents: write
   steps:
     - name: Zip
       shell: bash
